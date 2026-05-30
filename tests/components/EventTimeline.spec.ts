@@ -1,8 +1,19 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import EventTimeline from '../../app/components/EventTimeline.vue'
 
 describe('EventTimeline component', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+    // Use local time for the system clock to avoid timezone shifts in tests
+    vi.setSystemTime(new Date('2026-05-30T14:27:31'))
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+    vi.useRealTimers()
+  })
+
   it('renders empty state when events list is empty', () => {
     const wrapper = mount(EventTimeline, {
       props: {
@@ -21,7 +32,7 @@ describe('EventTimeline component', () => {
         event_type: 'ENTER',
         tracker_id: 12,
         confidence: 0.954,
-        timestamp: '2026-05-30T03:12:00Z',
+        timestamp: new Date('2026-05-30T03:12:00').toISOString(),
         snapshot_path: 'snapshots/crop_1.jpg'
       },
       {
@@ -29,7 +40,7 @@ describe('EventTimeline component', () => {
         event_type: 'LEAVE',
         tracker_id: 14,
         confidence: 0.88,
-        timestamp: '2026-05-30T03:14:00Z',
+        timestamp: new Date('2026-05-30T03:14:00').toISOString(),
         snapshot_path: null
       },
       {
@@ -37,7 +48,7 @@ describe('EventTimeline component', () => {
         event_type: 'FORCE_RESET',
         tracker_id: null,
         confidence: null,
-        timestamp: '2026-05-30T03:15:00Z',
+        timestamp: new Date('2026-05-30T03:15:00').toISOString(),
         snapshot_path: null
       }
     ]
@@ -59,6 +70,7 @@ describe('EventTimeline component', () => {
     expect(items[0].text()).toContain('Confidence:95%')
     expect(items[0].find('[data-testid="icon-enter"]').exists()).toBe(true)
     expect(items[0].find('[data-testid="snapshot-thumbnail"]').exists()).toBe(true)
+    expect(items[0].find('.event-time').text()).toContain('Today @')
 
     // Verify LEAVE
     expect(items[1].classes()).toContain('event-leave')
@@ -81,7 +93,7 @@ describe('EventTimeline component', () => {
         event_type: 'ENTER',
         tracker_id: 25,
         confidence: 0.99,
-        timestamp: '2026-05-30T03:12:00.000Z',
+        timestamp: new Date('2026-05-30T03:12:00').toISOString(),
         snapshot_path: 'snapshots/crop_custom.jpg'
       }
     ]
@@ -103,6 +115,7 @@ describe('EventTimeline component', () => {
     expect(emittedData.title).toBe('Occupant Entered')
     expect(emittedData.subtitle).toContain('Confidence: 99%')
     expect(emittedData.subtitle).toContain('Tracker ID: #25')
+    expect(emittedData.subtitle).toContain('Today @')
   })
 
   it('handles unknown event types and invalid/missing timestamps gracefully', () => {
@@ -155,7 +168,7 @@ describe('EventTimeline component', () => {
       event_type: 'FORCE_RESET',
       tracker_id: null,
       confidence: null,
-      timestamp: '2026-05-30T03:12:00.000Z',
+      timestamp: new Date('2026-05-30T03:12:00').toISOString(),
       snapshot_path: 'snapshots/reset.jpg'
     }
     wrapper.vm.triggerLightbox(resetEvent)
@@ -170,7 +183,7 @@ describe('EventTimeline component', () => {
       event_type: 'ENTER',
       tracker_id: i,
       confidence: 0.9,
-      timestamp: '2026-05-30T03:12:00.000Z',
+      timestamp: new Date('2026-05-30T03:12:00').toISOString(),
       snapshot_path: null
     }))
 

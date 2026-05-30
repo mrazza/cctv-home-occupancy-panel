@@ -134,7 +134,7 @@ const getSnapshotUrl = (path?: string | null) => {
 const triggerLightbox = (event: CctvEvent) => {
   const imageSrc = getSnapshotUrl(event.snapshot_path)
   const title = formatEventTitle(event.event_type)
-  const formattedDate = new Date(event.timestamp).toLocaleString()
+  const formattedDate = formatTime(event.timestamp)
   const confidenceStr = event.confidence ? ` | Confidence: ${(event.confidence * 100).toFixed(0)}%` : ''
   const trackerStr = event.tracker_id !== null && event.tracker_id !== undefined ? ` | Tracker ID: #${event.tracker_id}` : ''
   const subtitle = `${formattedDate}${trackerStr}${confidenceStr}`
