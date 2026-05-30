@@ -97,6 +97,7 @@
 
 <script setup lang="ts">
 import type { CctvEvent } from '../types'
+import { formatTime } from '../utils/formatTime'
 
 const props = withDefaults(
   defineProps<{
@@ -120,16 +121,6 @@ const formatEventTitle = (type: string) => {
     case 'LEAVE': return 'Occupant Left'
     case 'FORCE_RESET': return 'System State Reset'
     default: return type
-  }
-}
-
-const formatTime = (isoString: string) => {
-  if (!isoString) return ''
-  try {
-    const date = new Date(isoString)
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-  } catch (e) {
-    return isoString
   }
 }
 

@@ -27,7 +27,10 @@
       <div class="dashboard-grid">
         <!-- Left Side: Status Metrics and Live Video Feed -->
         <div class="dashboard-left">
-          <StatusCard :status="status" />
+          <div class="left-column-grid">
+            <StatusCard :status="status" />
+            <LiveFeedCard :status="status" />
+          </div>
         </div>
 
         <!-- Right Side: Reset Override Form and Activity Timeline -->
@@ -207,6 +210,18 @@ const {
 @media (max-width: 1023px) {
   .dashboard-right {
     margin-top: 24px;
+  }
+}
+
+.left-column-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .left-column-grid {
+    grid-template-columns: 1fr 1fr;
   }
 }
 </style>

@@ -1,6 +1,6 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useSafeConfig } from './useSafeConfig'
-import type { OccupancyStatus, CctvEvent, Toast, LightboxState } from '../types'
+import type { OccupancyStatus, CctvEvent, Toast, ToastType, LightboxState } from '../types'
 
 export function useOccupancy() {
   const config = useSafeConfig()
@@ -28,8 +28,8 @@ export function useOccupancy() {
   const statusPollIntervalValue = config.public.statusPollInterval
   const eventsPollIntervalValue = config.public.eventsPollInterval
 
-  let statusPollInterval: any = null
-  let eventsPollInterval: any = null
+  let statusPollInterval: ReturnType<typeof setInterval> | null = null
+  let eventsPollInterval: ReturnType<typeof setInterval> | null = null
 
   // Load current system presence metrics
   const fetchStatus = async () => {
@@ -97,7 +97,7 @@ export function useOccupancy() {
   }
 
   // Toast handling utility
-  const addToast = (message: string, type: string = 'info') => {
+  const addToast = (message: string, type: ToastType = 'info') => {
     const id = Date.now() + Math.random().toString(36).substr(2, 9)
     toasts.value.push({ id, message, type })
     

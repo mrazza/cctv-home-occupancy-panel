@@ -6,14 +6,15 @@ export default defineNuxtConfig({
   // Custom styling system import
   css: ['~/assets/css/main.css'],
 
-  // Runtime configuration
+  // Runtime configuration — override via NUXT_* env vars at runtime
+  // (e.g. NUXT_API_BASE_URL, NUXT_PUBLIC_PANEL_TITLE, NUXT_PUBLIC_CCTV_REFRESH_INTERVAL)
   runtimeConfig: {
-    apiBaseUrl: 'http://localhost:8000', // Can be overridden by NUXT_API_BASE_URL env var
+    apiBaseUrl: 'http://localhost:8000',
     public: {
-      panelTitle: 'CCTV OCCUPANCY PANEL', // Can be overridden by NUXT_PUBLIC_PANEL_TITLE env var
-      cctvRefreshInterval: parseInt(process.env.CCTV_REFRESH_INTERVAL || process.env.NUXT_PUBLIC_CCTV_REFRESH_INTERVAL || '2000', 10),
-      statusPollInterval: parseInt(process.env.STATUS_POLL_INTERVAL || process.env.NUXT_PUBLIC_STATUS_POLL_INTERVAL || '3000', 10),
-      eventsPollInterval: parseInt(process.env.EVENTS_POLL_INTERVAL || process.env.NUXT_PUBLIC_EVENTS_POLL_INTERVAL || '5000', 10)
+      panelTitle: 'CCTV OCCUPANCY PANEL',
+      cctvRefreshInterval: 2000,
+      statusPollInterval: 3000,
+      eventsPollInterval: 5000
     }
   }
 })

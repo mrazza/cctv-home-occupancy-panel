@@ -19,7 +19,7 @@ describe('SnapshotLightbox component', () => {
       }
     })
     
-    expect(document.body.querySelector('.lightbox-overlay')).toBeNull()
+    expect(document.body.querySelector('.overlay-backdrop')).toBeNull()
   })
 
   it('renders nothing when imageSrc is empty', () => {
@@ -30,7 +30,7 @@ describe('SnapshotLightbox component', () => {
       }
     })
     
-    expect(document.body.querySelector('.lightbox-overlay')).toBeNull()
+    expect(document.body.querySelector('.overlay-backdrop')).toBeNull()
   })
 
   it('renders inside Teleport when open with correct properties', () => {
@@ -43,7 +43,7 @@ describe('SnapshotLightbox component', () => {
       }
     })
 
-    const overlay = document.body.querySelector('.lightbox-overlay')
+    const overlay = document.body.querySelector('.overlay-backdrop')
     expect(overlay).not.toBeNull()
 
     const img = overlay?.querySelector('.lightbox-image') as HTMLImageElement
@@ -65,7 +65,7 @@ describe('SnapshotLightbox component', () => {
       }
     })
 
-    const overlay = document.body.querySelector('.lightbox-overlay')
+    const overlay = document.body.querySelector('.overlay-backdrop')
     const titleEl = overlay?.querySelector('.lightbox-title')
     expect(titleEl?.textContent).toBe('Snapshot Details')
   })
@@ -78,7 +78,7 @@ describe('SnapshotLightbox component', () => {
       }
     })
 
-    const closeBtn = document.body.querySelector('.lightbox-close') as HTMLButtonElement
+    const closeBtn = document.body.querySelector('.overlay-close-btn') as HTMLButtonElement
     expect(closeBtn).not.toBeNull()
 
     // Dispatch click event on the native element because it's teleported outside wrapper root
@@ -95,7 +95,7 @@ describe('SnapshotLightbox component', () => {
       }
     })
 
-    const overlay = document.body.querySelector('.lightbox-overlay') as HTMLDivElement
+    const overlay = document.body.querySelector('.overlay-backdrop') as HTMLDivElement
     expect(overlay).not.toBeNull()
 
     // Trigger click on backdrop
