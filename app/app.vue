@@ -99,6 +99,18 @@ const lightbox = ref({
   subtitle: ''
 })
 
+let statusPollIntervalValue = 3000
+let eventsPollIntervalValue = 5000
+try {
+  const config = globalThis.useRuntimeConfig
+    ? globalThis.useRuntimeConfig()
+    : useRuntimeConfig()
+  statusPollIntervalValue = config.public?.statusPollInterval ?? statusPollIntervalValue
+  eventsPollIntervalValue = config.public?.eventsPollInterval ?? eventsPollIntervalValue
+} catch (e) {
+  // Standalone unit tests fallback
+}
+
 let statusPollInterval = null
 let eventsPollInterval = null
 
@@ -200,9 +212,9 @@ onMounted(() => {
   fetchStatus()
   fetchEvents()
   
-  // Set up polling intervals: status every 3s, events every 5s
-  statusPollInterval = setInterval(fetchStatus, 3000)
-  eventsPollInterval = setInterval(fetchEvents, 5000)
+  // Set up polling intervals: status every statusPollIntervalValue ms, events every eventsPollIntervalValue ms
+  statusPollInterval = setInterval(fetchStatus, statusPollIntervalValue)
+  eventsPollInterval = setInterval(fetchEvents, eventsPollIntervalValue)
 })
 
 onUnmounted(() => {

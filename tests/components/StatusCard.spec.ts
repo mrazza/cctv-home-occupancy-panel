@@ -91,6 +91,44 @@ describe('StatusCard component', () => {
     expect(updatedSrc).toContain('t=')
   })
 
+  it('polls the live video frame periodically with a configured custom refresh interval', async () => {
+    // Mock custom refresh interval (e.g. 5000ms)
+    ;(globalThis as any).useRuntimeConfig = () => ({
+      public: {
+        cctvRefreshInterval: 5000
+      }
+    })
+
+    const wrapper = mount(StatusCard, {
+      props: {
+        status: {
+          is_someone_home: false,
+          current_occupancy: 0,
+          system_state: 'IDLE',
+          last_updated: '',
+          last_processed_frame: ''
+        }
+      }
+    })
+
+    const img = wrapper.find('[data-testid="live-feed-img"]') as any
+    await wrapper.vm.$nextTick()
+    const initialSrc = img.element.src
+
+    // Fast-forward 2 seconds (original default interval, shouldn't trigger reload)
+    vi.advanceTimersByTime(2000)
+    await wrapper.vm.$nextTick()
+    expect(img.element.src).toBe(initialSrc)
+
+    // Fast-forward another 3 seconds (reaching 5000ms custom interval)
+    vi.advanceTimersByTime(3000)
+    await wrapper.vm.$nextTick()
+    expect(img.element.src).not.toBe(initialSrc)
+
+    // Cleanup mock
+    delete (globalThis as any).useRuntimeConfig
+  })
+
   it('adjusts feed query parameters when tripwire or ROI is toggled', async () => {
     const wrapper = mount(StatusCard, {
       props: {

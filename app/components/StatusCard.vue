@@ -184,6 +184,16 @@ const frameSrc = ref('/api/frame')
 const imageError = ref(false)
 const isExpanded = ref(false)
 
+let cctvRefreshInterval = 2000
+try {
+  const config = globalThis.useRuntimeConfig
+    ? globalThis.useRuntimeConfig()
+    : useRuntimeConfig()
+  cctvRefreshInterval = config.public?.cctvRefreshInterval ?? cctvRefreshInterval
+} catch (e) {
+  // Standalone unit tests fallback
+}
+
 let refreshInterval = null
 
 const handleKeyDown = (e) => {
@@ -234,8 +244,8 @@ const formatTimestamp = (isoString) => {
 
 onMounted(() => {
   updateFrameSrc()
-  // Poll live video frame every 2 seconds
-  refreshInterval = setInterval(updateFrameSrc, 2000)
+  // Poll live video frame every configured interval
+  refreshInterval = setInterval(updateFrameSrc, cctvRefreshInterval)
 })
 
 onUnmounted(() => {

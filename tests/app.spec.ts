@@ -2,7 +2,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 const mockConfigState = {
   shouldThrow: false,
-  panelTitle: 'CCTV OCCUPANCY PANEL'
+  panelTitle: 'CCTV OCCUPANCY PANEL',
+  statusPollInterval: undefined as number | undefined,
+  eventsPollInterval: undefined as number | undefined
 }
 
 import { mount } from '@vue/test-utils'
@@ -19,6 +21,8 @@ describe('App central layout and state coordinator', () => {
     global.fetch = fetchMock
     mockConfigState.shouldThrow = false
     mockConfigState.panelTitle = 'CCTV OCCUPANCY PANEL'
+    mockConfigState.statusPollInterval = undefined
+    mockConfigState.eventsPollInterval = undefined
 
     // Mock useRuntimeConfig on globalThis to bypass Nuxt's ESM mock limitations in test environment
     ;(globalThis as any).useRuntimeConfig = () => {
@@ -27,7 +31,9 @@ describe('App central layout and state coordinator', () => {
       }
       return {
         public: {
-          panelTitle: mockConfigState.panelTitle
+          panelTitle: mockConfigState.panelTitle,
+          statusPollInterval: mockConfigState.statusPollInterval,
+          eventsPollInterval: mockConfigState.eventsPollInterval
         }
       }
     }
@@ -440,5 +446,39 @@ describe('App central layout and state coordinator', () => {
     // Verify limit increments and calls fetch with limit 20
     expect(wrapper.vm.eventsLimit).toBe(20)
     expect(fetchMock).toHaveBeenCalledWith('/api/events?limit=20')
+  })
+
+  it('respects custom poll intervals configured via runtimeConfig', async () => {
+    mockConfigState.statusPollInterval = 6000
+    mockConfigState.eventsPollInterval = 8000
+
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve([])
+    })
+
+    const wrapper = mount(App)
+    await vi.runOnlyPendingTimersAsync()
+    await wrapper.vm.$nextTick()
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/status')
+    expect(fetchMock).toHaveBeenCalledWith('/api/events?limit=10')
+
+    fetchMock.mockClear()
+
+    // Fast-forward 3 seconds (original default status interval). Should not trigger.
+    await vi.advanceTimersByTimeAsync(3000)
+    expect(fetchMock).not.toHaveBeenCalled()
+
+    // Fast-forward another 3 seconds (reaches 6000ms for status poll)
+    await vi.advanceTimersByTimeAsync(3000)
+    expect(fetchMock).toHaveBeenCalledWith('/api/status')
+    expect(fetchMock).not.toHaveBeenCalledWith('/api/events?limit=10')
+
+    fetchMock.mockClear()
+
+    // Fast-forward another 2 seconds (reaches 8000ms since start for events poll)
+    await vi.advanceTimersByTimeAsync(2000)
+    expect(fetchMock).toHaveBeenCalledWith('/api/events?limit=10')
   })
 })
