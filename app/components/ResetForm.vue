@@ -140,21 +140,23 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, watch } from 'vue'
 
-const props = defineProps({
-  initialIsHome: {
-    type: Boolean,
-    default: false
-  },
-  initialOccupantCount: {
-    type: Number,
-    default: 0
+const props = withDefaults(
+  defineProps<{
+    initialIsHome?: boolean
+    initialOccupantCount?: number
+  }>(),
+  {
+    initialIsHome: false,
+    initialOccupantCount: 0
   }
-})
+)
 
-const emit = defineEmits(['submit'])
+const emit = defineEmits<{
+  (e: 'submit', payload: { is_someone_home: boolean; current_occupancy: number }): void
+}>()
 
 const isExpanded = ref(false)
 const isHome = ref(props.initialIsHome)

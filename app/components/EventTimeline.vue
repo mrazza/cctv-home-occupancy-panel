@@ -95,22 +95,26 @@
   </div>
 </template>
 
-<script setup>
-const props = defineProps({
-  events: {
-    type: Array,
-    required: true,
-    default: () => []
-  },
-  limit: {
-    type: Number,
-    default: 10
+<script setup lang="ts">
+import type { CctvEvent } from '../types'
+
+const props = withDefaults(
+  defineProps<{
+    events: CctvEvent[]
+    limit?: number
+  }>(),
+  {
+    events: () => [],
+    limit: 10
   }
-})
+)
 
-const emit = defineEmits(['view-snapshot', 'load-more'])
+const emit = defineEmits<{
+  (e: 'view-snapshot', details: { imageSrc: string; title: string; subtitle: string }): void
+  (e: 'load-more'): void
+}>()
 
-const formatEventTitle = (type) => {
+const formatEventTitle = (type: string) => {
   switch (type) {
     case 'ENTER': return 'Occupant Entered'
     case 'LEAVE': return 'Occupant Left'
@@ -119,7 +123,7 @@ const formatEventTitle = (type) => {
   }
 }
 
-const formatTime = (isoString) => {
+const formatTime = (isoString: string) => {
   if (!isoString) return ''
   try {
     const date = new Date(isoString)
@@ -129,14 +133,14 @@ const formatTime = (isoString) => {
   }
 }
 
-const getSnapshotUrl = (path) => {
+const getSnapshotUrl = (path?: string | null) => {
   if (!path) return ''
   // E.g. 'snapshots/crop_xxx.jpg' -> extract 'crop_xxx.jpg'
   const filename = path.replace(/^snapshots\//, '')
   return `/api/snapshot/${filename}`
 }
 
-const triggerLightbox = (event) => {
+const triggerLightbox = (event: CctvEvent) => {
   const imageSrc = getSnapshotUrl(event.snapshot_path)
   const title = formatEventTitle(event.event_type)
   const formattedDate = new Date(event.timestamp).toLocaleString()

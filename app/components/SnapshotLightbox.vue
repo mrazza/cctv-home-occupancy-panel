@@ -28,27 +28,24 @@
   </Teleport>
 </template>
 
-<script setup>
-defineProps({
-  isOpen: {
-    type: Boolean,
-    required: true
-  },
-  imageSrc: {
-    type: String,
-    default: ''
-  },
-  title: {
-    type: String,
-    default: ''
-  },
-  subtitle: {
-    type: String,
-    default: ''
+<script setup lang="ts">
+withDefaults(
+  defineProps<{
+    isOpen: boolean
+    imageSrc?: string
+    title?: string
+    subtitle?: string
+  }>(),
+  {
+    imageSrc: '',
+    title: '',
+    subtitle: ''
   }
-})
+)
 
-defineEmits(['close'])
+defineEmits<{
+  (e: 'close'): void
+}>()
 </script>
 
 <style scoped>

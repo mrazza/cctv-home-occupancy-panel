@@ -155,14 +155,17 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { useSafeConfig } from '../composables/useSafeConfig'
+import type { OccupancyStatus } from '../types'
 
-const props = defineProps({
-  status: {
-    type: Object,
-    required: true,
-    default: () => ({
+const props = withDefaults(
+  defineProps<{
+    status: OccupancyStatus
+  }>(),
+  {
+    status: () => ({
       is_someone_home: false,
       current_occupancy: 0,
       system_state: 'OFFLINE',
@@ -170,7 +173,7 @@ const props = defineProps({
       last_processed_frame: ''
     })
   }
-})
+)
 
 const isSomeoneHome = computed(() => props.status?.is_someone_home ?? false)
 const occupantsCount = computed(() => props.status?.current_occupancy ?? 0)
@@ -184,19 +187,12 @@ const frameSrc = ref('/api/frame')
 const imageError = ref(false)
 const isExpanded = ref(false)
 
-let cctvRefreshInterval = 2000
-try {
-  const config = globalThis.useRuntimeConfig
-    ? globalThis.useRuntimeConfig()
-    : useRuntimeConfig()
-  cctvRefreshInterval = config.public?.cctvRefreshInterval ?? cctvRefreshInterval
-} catch (e) {
-  // Standalone unit tests fallback
-}
+const config = useSafeConfig()
+const cctvRefreshInterval = config.public.cctvRefreshInterval
 
-let refreshInterval = null
+let refreshInterval: any = null
 
-const handleKeyDown = (e) => {
+const handleKeyDown = (e: KeyboardEvent) => {
   if (e.key === 'Escape' && isExpanded.value) {
     closeExpanded()
   }
@@ -232,7 +228,7 @@ const handleImageLoad = () => {
   imageError.value = false
 }
 
-const formatTimestamp = (isoString) => {
+const formatTimestamp = (isoString?: string | null) => {
   if (!isoString) return ''
   try {
     const date = new Date(isoString)

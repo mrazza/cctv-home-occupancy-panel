@@ -66,161 +66,27 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+<script setup lang="ts">
+import { useSafeConfig } from './composables/useSafeConfig'
+import { useOccupancy } from './composables/useOccupancy'
 
-let panelTitle = 'CCTV OCCUPANCY PANEL'
-try {
-  const config = globalThis.useRuntimeConfig
-    ? globalThis.useRuntimeConfig()
-    : useRuntimeConfig()
-  panelTitle = config.public?.panelTitle || panelTitle
-} catch (e) {
-  // Standalone unit tests fallback
-}
+const config = useSafeConfig()
+const panelTitle = config.public.panelTitle
 
-const status = ref({
-  is_someone_home: false,
-  current_occupancy: 0,
-  system_state: 'OFFLINE',
-  last_updated: '',
-  last_processed_frame: ''
-})
-
-const isOffline = computed(() => (status.value?.system_state ?? 'OFFLINE') === 'OFFLINE')
-
-const events = ref([])
-const eventsLimit = ref(10)
-const toasts = ref([])
-const lightbox = ref({
-  isOpen: false,
-  imageSrc: '',
-  title: '',
-  subtitle: ''
-})
-
-let statusPollIntervalValue = 3000
-let eventsPollIntervalValue = 5000
-try {
-  const config = globalThis.useRuntimeConfig
-    ? globalThis.useRuntimeConfig()
-    : useRuntimeConfig()
-  statusPollIntervalValue = config.public?.statusPollInterval ?? statusPollIntervalValue
-  eventsPollIntervalValue = config.public?.eventsPollInterval ?? eventsPollIntervalValue
-} catch (e) {
-  // Standalone unit tests fallback
-}
-
-let statusPollInterval = null
-let eventsPollInterval = null
-
-// Load current system presence metrics
-const fetchStatus = async () => {
-  try {
-    const response = await fetch('/api/status')
-    if (!response.ok) throw new Error('API server returned error code')
-    const data = await response.json()
-    status.value = data
-  } catch (error) {
-    status.value = {
-      is_someone_home: false,
-      current_occupancy: 0,
-      system_state: 'OFFLINE',
-      last_updated: status.value.last_updated || '',
-      last_processed_frame: status.value.last_processed_frame || ''
-    }
-  }
-}
-
-// Load historical events
-const fetchEvents = async () => {
-  try {
-    const response = await fetch(`/api/events?limit=${eventsLimit.value}`)
-    if (!response.ok) throw new Error('API server returned error code')
-    const data = await response.json()
-    events.value = data
-  } catch (error) {
-    console.error('Failed to poll events:', error)
-  }
-}
-
-const handleLoadMore = async () => {
-  eventsLimit.value += 10
-  await fetchEvents()
-}
-
-// Manual force reset override trigger handler
-const handleReconcile = async (payload) => {
-  try {
-    const response = await fetch('/api/reset', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    })
-
-    if (!response.ok) {
-      throw new Error(`Server returned error: ${response.statusText}`)
-    }
-
-    const result = await response.json()
-    
-    if (result.status === 'success') {
-      addToast('Presence state manually reconciled.', 'success')
-      // Instantly refresh states following override action
-      await fetchStatus()
-      await fetchEvents()
-    } else {
-      throw new Error(result.message || 'Operation failed')
-    }
-  } catch (error) {
-    addToast(`Failed to reconcile state: ${error.message}`, 'error')
-  }
-}
-
-// Toast handling utility
-const addToast = (message, type = 'info') => {
-  const id = Date.now() + Math.random().toString(36).substr(2, 9)
-  toasts.value.push({ id, message, type })
-  
-  // Auto dismiss toast after 5 seconds
-  setTimeout(() => {
-    dismissToast(id)
-  }, 5000)
-}
-
-const dismissToast = (id) => {
-  toasts.value = toasts.value.filter(t => t.id !== id)
-}
-
-// Lightbox utility handlers
-const openLightbox = (details) => {
-  lightbox.value = {
-    isOpen: true,
-    imageSrc: details.imageSrc,
-    title: details.title,
-    subtitle: details.subtitle
-  }
-}
-
-const closeLightbox = () => {
-  lightbox.value.isOpen = false
-}
-
-onMounted(() => {
-  fetchStatus()
-  fetchEvents()
-  
-  // Set up polling intervals: status every statusPollIntervalValue ms, events every eventsPollIntervalValue ms
-  statusPollInterval = setInterval(fetchStatus, statusPollIntervalValue)
-  eventsPollInterval = setInterval(fetchEvents, eventsPollIntervalValue)
-})
-
-onUnmounted(() => {
-  clearInterval(statusPollInterval)
-  clearInterval(eventsPollInterval)
-})
+const {
+  status,
+  isOffline,
+  events,
+  eventsLimit,
+  toasts,
+  lightbox,
+  handleLoadMore,
+  handleReconcile,
+  addToast,
+  dismissToast,
+  openLightbox,
+  closeLightbox
+} = useOccupancy()
 </script>
 
 <style scoped>

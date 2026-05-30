@@ -27,15 +27,16 @@
   </div>
 </template>
 
-<script setup>
-defineProps({
-  toasts: {
-    type: Array,
-    required: true
-  }
-})
+<script setup lang="ts">
+import type { Toast } from '../types'
 
-defineEmits(['dismiss'])
+defineProps<{
+  toasts: Toast[]
+}>()
+
+defineEmits<{
+  (e: 'dismiss', id: string): void
+}>()
 </script>
 
 <style scoped>
