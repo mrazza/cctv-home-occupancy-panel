@@ -1,6 +1,10 @@
 # 👁️ CCTV Home Occupancy Panel
 
-A high-performance, real-time presence monitoring and occupancy reconciliation dashboard designed **exclusively** as a companion for the [mrazza/cctv-home-occupancy](https://github.com/mrazza/cctv-home-occupancy) project. This dashboard is not designed for general-purpose smart security systems; instead, it integrates specifically with the `mrazza/cctv-home-occupancy` Python daemon to display its occupancy levels, event logs, and security tripwire snapshots within a premium glassmorphic user interface.
+A high-performance, real-time presence monitoring and occupancy reconciliation dashboard designed **exclusively** as a companion for the [mrazza/cctv-home-occupancy](https://github.com/mrazza/cctv-home-occupancy) project.
+
+![CCTV Home Occupancy Panel Screenshot](screenshot.png)
+
+This dashboard is not designed for general-purpose smart security systems; instead, it integrates specifically with the `mrazza/cctv-home-occupancy` Python daemon to display its occupancy levels, event logs, and security tripwire snapshots within a premium glassmorphic user interface.
 
 ---
 
