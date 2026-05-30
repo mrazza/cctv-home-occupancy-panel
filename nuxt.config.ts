@@ -6,6 +6,22 @@ export default defineNuxtConfig({
   // Custom styling system import
   css: ['~/assets/css/main.css'],
 
+  // App head settings (Favicon, SEO, and viewport)
+  app: {
+    head: {
+      title: 'CCTV Home Occupancy Panel',
+      meta: [
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'description', content: 'A high-performance, real-time presence monitoring and occupancy reconciliation dashboard designed exclusively as a companion for cctv-home-occupancy.' },
+        { name: 'theme-color', content: '#0a0a0f' }
+      ],
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'icon', type: 'image/png', href: '/favicon.png' }
+      ]
+    }
+  },
+
   // Runtime configuration — override via NUXT_* env vars at runtime
   // (e.g. NUXT_API_BASE_URL, NUXT_PUBLIC_PANEL_TITLE, NUXT_PUBLIC_CCTV_REFRESH_INTERVAL)
   runtimeConfig: {

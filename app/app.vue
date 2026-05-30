@@ -4,7 +4,7 @@
     <header class="app-header">
       <div class="header-container">
         <div class="logo-area">
-          <div class="logo-scanner"></div>
+          <img :src="'/favicon.png'" alt="Logo" class="logo-icon" data-testid="app-logo-icon" />
           <h1 class="logo-title" data-testid="app-logo-title">{{ panelTitle }}</h1>
         </div>
         <div class="header-meta">
@@ -125,26 +125,12 @@ const {
   gap: 12px;
 }
 
-.logo-scanner {
+.logo-icon {
   width: 24px;
   height: 24px;
-  border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-info));
-  box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
-  position: relative;
-  overflow: hidden;
-}
-
-.logo-scanner::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: #fff;
-  box-shadow: 0 0 8px #fff;
-  animation: pulse-active 1.5s infinite ease-in-out;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6));
+  animation: pulse-active 2s infinite ease-in-out;
 }
 
 .logo-title {
