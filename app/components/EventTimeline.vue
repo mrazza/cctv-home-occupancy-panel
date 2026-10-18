@@ -53,6 +53,17 @@
                 <span class="pill-label">Confidence:</span>
                 <span class="pill-value">{{ (event.confidence * 100).toFixed(0) }}%</span>
               </div>
+              <div class="detail-pill" v-if="event.luminance !== null && event.luminance !== undefined">
+                <span class="pill-label">Lux:</span>
+                <span class="pill-value">{{ event.luminance.toFixed(1) }}</span>
+              </div>
+              <div class="detail-pill" v-if="event.blur_metric !== null && event.blur_metric !== undefined">
+                <span class="pill-label">Sharpness:</span>
+                <span class="pill-value">{{ event.blur_metric.toFixed(0) }}</span>
+              </div>
+              <div class="detail-pill pill-low-light" v-if="event.luminance !== null && event.luminance !== undefined && event.luminance < 50">
+                <span class="pill-value">🌙 Low-Light</span>
+              </div>
             </div>
 
             <!-- Thumbnail if snapshot exists -->
@@ -111,7 +122,7 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  (e: 'view-snapshot', details: { imageSrc: string; title: string; subtitle: string }): void
+  (e: 'view-snapshot', details: { imageSrc: string; videoSrc?: string; title: string; subtitle: string }): void
   (e: 'load-more'): void
 }>()
 
@@ -137,10 +148,18 @@ const triggerLightbox = (event: CctvEvent) => {
   const formattedDate = formatTime(event.timestamp)
   const confidenceStr = event.confidence ? ` | Confidence: ${(event.confidence * 100).toFixed(0)}%` : ''
   const trackerStr = event.tracker_id !== null && event.tracker_id !== undefined ? ` | Tracker ID: #${event.tracker_id}` : ''
-  const subtitle = `${formattedDate}${trackerStr}${confidenceStr}`
+  const lumStr = event.luminance !== null && event.luminance !== undefined ? ` | Lux: ${event.luminance.toFixed(1)}` : ''
+  const subtitle = `${formattedDate}${trackerStr}${confidenceStr}${lumStr}`
+
+  let videoSrc = ''
+  if (event.snapshot_path) {
+    const filename = event.snapshot_path.replace(/^snapshots\//, '').replace(/\.jpg$/, '.mp4')
+    videoSrc = `/api/clip/${filename}`
+  }
 
   emit('view-snapshot', {
     imageSrc,
+    videoSrc,
     title,
     subtitle
   })
@@ -320,6 +339,13 @@ const triggerLightbox = (event: CctvEvent) => {
 .pill-value {
   color: var(--text-secondary);
   font-weight: 500;
+}
+
+.detail-pill.pill-low-light {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: var(--accent-warning);
+  font-weight: 600;
 }
 
 /* Snapshot Thumbnail inside timeline */

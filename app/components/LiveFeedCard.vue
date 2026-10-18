@@ -6,7 +6,7 @@
         <label class="toggle-control" data-testid="tripwire-toggle-label">
           <input type="checkbox" v-model="showTripwire" @change="refreshFrame" />
           <span class="toggle-slider"></span>
-          <span class="toggle-label">Tripwire</span>
+          <span class="toggle-label">Tripwire / Zones</span>
         </label>
         <label class="toggle-control" data-testid="roi-toggle-label">
           <input type="checkbox" v-model="showRoi" @change="refreshFrame" />
@@ -77,7 +77,7 @@
               <label class="toggle-control" data-testid="expanded-tripwire-toggle-label">
                 <input type="checkbox" v-model="showTripwire" @change="refreshFrame" />
                 <span class="toggle-slider"></span>
-                <span class="toggle-label">Tripwire</span>
+                <span class="toggle-label">Tripwire / Zones</span>
               </label>
               <label class="toggle-control" data-testid="expanded-roi-toggle-label">
                 <input type="checkbox" v-model="showRoi" @change="refreshFrame" />
@@ -85,6 +85,14 @@
                 <span class="toggle-label">ROI</span>
               </label>
             </div>
+          </div>
+
+          <div v-if="showTripwire" class="zone-legend-bar" data-testid="zone-legend">
+            <span class="legend-title">Dual-Zone:</span>
+            <span class="legend-item"><span class="legend-dot green"></span>Inside (+1)</span>
+            <span class="legend-item"><span class="legend-dot amber"></span>Threshold (0)</span>
+            <span class="legend-item"><span class="legend-dot orange"></span>Outside (-1)</span>
+            <span class="legend-item"><span class="legend-dot red"></span>Foot Anchor</span>
           </div>
 
           <div class="expanded-image-container">
@@ -453,4 +461,40 @@ watch(() => props.status, () => {
   border-radius: var(--radius-full);
   border: 1px solid var(--border-color);
 }
+
+.zone-legend-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  margin-top: 10px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.legend-title {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.legend-dot.green { background: #00e664; box-shadow: 0 0 6px rgba(0, 230, 100, 0.4); }
+.legend-dot.amber { background: #00d7ff; box-shadow: 0 0 6px rgba(0, 215, 255, 0.4); }
+.legend-dot.orange { background: #008cff; box-shadow: 0 0 6px rgba(0, 140, 255, 0.4); }
+.legend-dot.red { background: #f43f5e; box-shadow: 0 0 6px rgba(244, 63, 94, 0.4); }
+
 </style>

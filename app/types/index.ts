@@ -17,6 +17,9 @@ export interface CctvEvent {
   confidence?: number | null
   timestamp: string
   snapshot_path?: string | null
+  session_id?: string | null
+  luminance?: number | null
+  blur_metric?: number | null
 }
 
 export interface Toast {
@@ -28,6 +31,7 @@ export interface Toast {
 export interface LightboxState {
   isOpen: boolean
   imageSrc: string
+  videoSrc?: string
   title: string
   subtitle: string
 }

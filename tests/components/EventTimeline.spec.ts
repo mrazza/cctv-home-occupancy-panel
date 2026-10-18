@@ -206,4 +206,75 @@ describe('EventTimeline component', () => {
     await wrapper.setProps({ limit: 20 })
     expect(wrapper.find('[data-testid="load-more-btn"]').exists()).toBe(false)
   })
+
+  it('renders luminance, sharpness, and low-light badge when telemetry is present', () => {
+    const mockEvents = [
+      {
+        id: 10,
+        event_type: 'ENTER',
+        tracker_id: 88,
+        confidence: 0.65,
+        timestamp: new Date('2026-05-30T03:12:00').toISOString(),
+        snapshot_path: 'snapshots/crop_night.jpg',
+        luminance: 44.5,
+        blur_metric: 485.2
+      },
+      {
+        id: 11,
+        event_type: 'LEAVE',
+        tracker_id: 89,
+        confidence: 0.85,
+        timestamp: new Date('2026-05-30T03:14:00').toISOString(),
+        snapshot_path: null,
+        luminance: 105.2,
+        blur_metric: 720.0
+      }
+    ]
+
+    const wrapper = mount(EventTimeline, {
+      props: {
+        events: mockEvents
+      }
+    })
+
+    const items = wrapper.findAll('[data-testid="timeline-item"]')
+    expect(items).toHaveLength(2)
+
+    // First item has low-light (<50)
+    expect(items[0].text()).toContain('Lux:44.5')
+    expect(items[0].text()).toContain('Sharpness:485')
+    expect(items[0].text()).toContain('🌙 Low-Light')
+
+    // Second item has bright (>50)
+    expect(items[1].text()).toContain('Lux:105.2')
+    expect(items[1].text()).toContain('Sharpness:720')
+    expect(items[1].text()).not.toContain('🌙 Low-Light')
+  })
+
+  it('emits videoSrc when snapshot is clicked', async () => {
+    const mockEvents = [
+      {
+        id: 1,
+        event_type: 'ENTER',
+        tracker_id: 25,
+        confidence: 0.99,
+        timestamp: new Date('2026-05-30T03:12:00').toISOString(),
+        snapshot_path: 'snapshots/enter_id25_20260530_120000.jpg',
+        luminance: 48.0
+      }
+    ]
+
+    const wrapper = mount(EventTimeline, {
+      props: {
+        events: mockEvents
+      }
+    })
+
+    const thumb = wrapper.find('[data-testid="snapshot-thumbnail"]')
+    await thumb.trigger('click')
+
+    const emittedData = wrapper.emitted('view-snapshot')?.[0]?.[0] as any
+    expect(emittedData.videoSrc).toBe('/api/clip/enter_id25_20260530_120000.mp4')
+    expect(emittedData.subtitle).toContain('Lux: 48.0')
+  })
 })
