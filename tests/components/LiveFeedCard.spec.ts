@@ -307,4 +307,42 @@ describe('LiveFeedCard component', () => {
     wrapper.unmount()
     expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', expect.any(Function))
   })
+
+  it('renders dual-zone legend in expanded view when tripwire toggle is active', async () => {
+    const wrapper = mount(LiveFeedCard, {
+      props: {
+        status: {
+          is_someone_home: false,
+          current_occupancy: 0,
+          system_state: 'IDLE',
+          last_updated: '',
+          last_processed_frame: ''
+        }
+      }
+    })
+
+    // Open expanded overlay
+    await wrapper.find('[data-testid="live-feed-container"]').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    const overlay = document.body.querySelector('[data-testid="expanded-feed-overlay"]') as HTMLDivElement
+    expect(overlay).not.toBeNull()
+
+    // Zone legend should not show when showTripwire is false
+    expect(overlay.querySelector('[data-testid="zone-legend"]')).toBeNull()
+
+    // Enable tripwire checkbox inside expanded overlay
+    const checkbox = overlay.querySelector('[data-testid="expanded-tripwire-toggle-label"] input') as HTMLInputElement
+    checkbox.checked = true
+    checkbox.dispatchEvent(new Event('change'))
+    await wrapper.vm.$nextTick()
+
+    // Zone legend should now be visible
+    const legend = overlay.querySelector('[data-testid="zone-legend"]')
+    expect(legend).not.toBeNull()
+    expect(legend?.textContent).toContain('Dual-Zone:')
+    expect(legend?.textContent).toContain('Inside (+1)')
+    expect(legend?.textContent).toContain('Threshold (0)')
+    expect(legend?.textContent).toContain('Outside (-1)')
+  })
 })

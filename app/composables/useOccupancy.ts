@@ -21,6 +21,7 @@ export function useOccupancy() {
   const lightbox = ref<LightboxState>({
     isOpen: false,
     imageSrc: '',
+    videoSrc: '',
     title: '',
     subtitle: ''
   })
@@ -112,10 +113,11 @@ export function useOccupancy() {
   }
 
   // Lightbox utility handlers
-  const openLightbox = (details: { imageSrc: string; title: string; subtitle: string }) => {
+  const openLightbox = (details: { imageSrc: string; videoSrc?: string; title: string; subtitle: string }) => {
     lightbox.value = {
       isOpen: true,
       imageSrc: details.imageSrc,
+      videoSrc: details.videoSrc || '',
       title: details.title,
       subtitle: details.subtitle
     }

@@ -62,6 +62,7 @@
     <SnapshotLightbox 
       :is-open="lightbox.isOpen"
       :image-src="lightbox.imageSrc"
+      :video-src="lightbox.videoSrc"
       :title="lightbox.title"
       :subtitle="lightbox.subtitle"
       @close="closeLightbox"
