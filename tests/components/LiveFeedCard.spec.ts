@@ -345,4 +345,27 @@ describe('LiveFeedCard component', () => {
     expect(legend?.textContent).toContain('Threshold (0)')
     expect(legend?.textContent).toContain('Outside (-1)')
   })
+
+  it('toggles low-light enhancement parameter in frameSrc', async () => {
+    const wrapper = mount(LiveFeedCard, {
+      props: {
+        status: {
+          is_someone_home: false,
+          current_occupancy: 0,
+          system_state: 'IDLE',
+          last_updated: '',
+          last_processed_frame: ''
+        }
+      }
+    })
+
+    const enhanceLabel = wrapper.find('[data-testid="enhance-toggle-label"]')
+    expect(enhanceLabel.exists()).toBe(true)
+
+    const checkbox = enhanceLabel.find('input[type="checkbox"]')
+    await checkbox.setValue(true)
+
+    const img = wrapper.find('[data-testid="live-feed-img"]') as any
+    expect(img.element.src).toContain('enhance_low_light=true')
+  })
 })

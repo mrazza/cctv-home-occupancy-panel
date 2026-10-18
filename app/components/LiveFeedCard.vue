@@ -13,6 +13,11 @@
           <span class="toggle-slider"></span>
           <span class="toggle-label">ROI</span>
         </label>
+        <label class="toggle-control" data-testid="enhance-toggle-label">
+          <input type="checkbox" v-model="showEnhancement" @change="refreshFrame" />
+          <span class="toggle-slider"></span>
+          <span class="toggle-label">Enhance</span>
+        </label>
       </div>
     </div>
 
@@ -84,6 +89,11 @@
                 <span class="toggle-slider"></span>
                 <span class="toggle-label">ROI</span>
               </label>
+              <label class="toggle-control" data-testid="expanded-enhance-toggle-label">
+                <input type="checkbox" v-model="showEnhancement" @change="refreshFrame" />
+                <span class="toggle-slider"></span>
+                <span class="toggle-label">Enhance</span>
+              </label>
             </div>
           </div>
 
@@ -141,6 +151,7 @@ const props = withDefaults(
 
 const showTripwire = ref(false)
 const showRoi = ref(false)
+const showEnhancement = ref(false)
 const frameSrc = ref('/api/frame')
 const imageError = ref(false)
 const isExpanded = ref(false)
@@ -170,7 +181,8 @@ const updateFrameSrc = () => {
   const timestamp = Date.now()
   const tripwireParam = showTripwire.value ? '&draw_tripwire=true' : ''
   const roiParam = showRoi.value ? '&draw_roi=true' : ''
-  frameSrc.value = `/api/frame?t=${timestamp}${tripwireParam}${roiParam}`
+  const enhanceParam = showEnhancement.value ? '&enhance_low_light=true' : ''
+  frameSrc.value = `/api/frame?t=${timestamp}${tripwireParam}${roiParam}${enhanceParam}`
 }
 
 const refreshFrame = () => {
