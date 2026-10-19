@@ -201,14 +201,8 @@ const {
 }
 
 .left-column-grid {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 24px;
-}
-
-@media (min-width: 768px) {
-  .left-column-grid {
-    grid-template-columns: 1fr 1fr;
-  }
 }
 </style>

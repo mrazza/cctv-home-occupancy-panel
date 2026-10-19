@@ -222,15 +222,19 @@ watch(() => props.status, () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  margin-bottom: 20px;
 }
 
 .card-title {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* Video Feed card styles */
@@ -309,21 +313,26 @@ watch(() => props.status, () => {
 /* Video Control toggles */
 .stream-controls {
   display: flex;
-  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 14px;
 }
 
 .toggle-control {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   cursor: pointer;
   user-select: none;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .toggle-label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
   color: var(--text-secondary);
+  white-space: nowrap;
 }
 
 .toggle-control input {
@@ -336,19 +345,20 @@ watch(() => props.status, () => {
 .toggle-slider {
   position: relative;
   display: inline-block;
-  width: 34px;
-  height: 20px;
+  width: 28px;
+  height: 16px;
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-full);
   transition: var(--transition-fast);
   border: 1px solid var(--border-color);
+  flex-shrink: 0;
 }
 
 .toggle-slider:before {
   position: absolute;
   content: "";
-  height: 14px;
-  width: 14px;
+  height: 10px;
+  width: 10px;
   left: 2px;
   bottom: 2px;
   background-color: var(--text-primary);
@@ -363,7 +373,7 @@ watch(() => props.status, () => {
 }
 
 .toggle-control input:checked + .toggle-slider:before {
-  transform: translateX(14px);
+  transform: translateX(12px);
 }
 
 /* Expand hint styling */
